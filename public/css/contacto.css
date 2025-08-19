@@ -1,0 +1,98 @@
+/* contacto.css */
+main {
+  margin: 10rem 0rem;
+}
+.section-contact {
+  background-color: var(--verde-pastel);
+  padding: clamp(2rem, 6vw, 4rem) clamp(1rem, 4vw, 2rem);
+  color: var(--negro);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.contact-title {
+  text-align: center;
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: var(--verde-oscuro);
+  margin-bottom: clamp(1rem, 3vw, 2rem);
+}
+
+.contact-subtitle {
+  text-align: center;
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  color: var(--verde-medio);
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.contact-form {
+  max-width: 700px;
+  margin: 0 auto;
+  background: var(--blanco);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-radius: 1rem;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+}
+
+.form-group {
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--verde-oscuro);
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: clamp(0.6rem, 1.5vw, 0.9rem); 
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
+  border: 1px solid var(--verde-medio);
+  border-radius: 0.5rem;
+  transition: border-color 0.3s ease;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--verde-oscuro);
+  outline: none;
+}
+
+.btn-enviar {
+  display: block;
+  width: 100%;
+  background-color: var(--verde-oscuro);
+  color: var(--blanco);
+  padding: clamp(0.9rem, 2vw, 1.2rem);
+  font-size: clamp(1rem, 2.5vw, 1.1rem);
+  border: none;
+  border-radius: 0.7rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-enviar:hover {
+  background-color: var(--verde-medio);
+}
+
+body a img {
+  width: 40px;
+  height: 40px;
+}
+
+.whatsapp {
+  position: fixed;
+  right: 10px;
+  bottom: 20px;
+  z-index: 99;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+  transition: 0.3s ease;
+}
+
+.whatsapp:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px 10px rgba(0, 255, 0, 0.5);
+}

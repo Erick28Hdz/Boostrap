@@ -1,0 +1,179 @@
+.carousel-inner {
+  width: 100%;
+  height: 90vh;
+}
+
+#carouselheroCaptions .carousel-caption {
+  bottom: 50%;
+  color: var(--blanco);
+  text-align: left;
+  z-index: 10;
+}
+
+#carouselheroCaptions .carousel-caption h5 {
+  font-size: var(--font-xl);
+  color: var(--verde-claro);
+  text-shadow: 2px 2px 5px var(--negro);
+  font-weight: bold;
+}
+
+#carouselheroCaptions .carousel-caption p {
+  font-size: var(--font-md);
+  color: var(--blanco);
+  text-shadow: 2px 2px 5px var(--negro);
+}
+
+#carouselheroCaptions .carousel-indicators {
+  bottom: 10%;
+}
+
+#carouselheroCaptions .carousel-indicators button {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background-color: var(--blanco);
+  border: 1px solid var(--verde-claro);
+  opacity: 0.8;
+}
+
+#carouselheroCaptions .carousel-indicators .active {
+  background-color: var(--verde-claro);
+  opacity: 1;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: var(--verde-claro);
+  border-radius: 50%;
+  padding: 10px;
+  filter: drop-shadow(0 0 3px var(--negro));
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 5%;
+}
+
+/* Secciones */
+.section-title {
+  color: var(--verde-oscuro);
+  font-weight: 700;
+  font-size: var(--font-lg);
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  color: var(--verde-medio);
+  font-weight: 600;
+  font-size: var(--font-md);
+  margin-bottom: 0.8rem;
+}
+
+/* Colores de fondo para cada sección */
+#about {
+  background-color: var(--blanco);
+}
+
+#servicios {
+  background-color: var(--verde-claro);
+}
+
+#questions {
+  background-color: var(--verde-pastel);
+}
+
+/* Para que no se vea todo plano, agregamos separación visual entre secciones */
+#about,
+#servicios,
+#questions {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+#about .section-title,
+#servicios .section-title,
+#questions .section-title {
+  font-size: var(--font-lg);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#about p,
+#servicios p,
+#questions p {
+  line-height: 1.7;
+}
+
+/* Tarjetas de servicio */
+.card-servicio {
+  background-color: var(--blanco);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-servicio:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-servicio .card-body {
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.card-servicio h4 {
+  color: var(--verde-oscuro);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  margin-top: 0.8rem;
+}
+
+.card-servicio p {
+  font-size: var(--font-xs);
+  margin: 10px 0;
+  color: #444;
+}
+
+#servicios,
+#about,
+#questions {
+  text-align: center;
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(1rem, 2vw, 2rem);
+}
+
+#about img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: var(--font-md);
+  font-weight: bold;
+  padding-bottom: 1rem;
+}
+
+body a img {
+  width: 40px;
+  height: 40px;
+}
+
+.whatsapp {
+  position: fixed;
+  right: 10px;
+  bottom: 20px;
+  z-index: 99;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+  transition: 0.3s ease;
+}
+
+.whatsapp:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px 10px rgba(0, 255, 0, 0.5);
+}

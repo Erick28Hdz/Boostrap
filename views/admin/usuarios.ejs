@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Usuarios - Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #343a40;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 12px 20px;
+      display: block;
+    }
+
+    .sidebar a:hover {
+      background-color: #495057;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background-color: #f8f9fa;
+    }
+
+    .user-info p {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
+
+    <!-- Contenido principal -->
+    <div class="main-content container-fluid">
+      <h1 class="mb-4">👥 Gestión de Usuarios</h1>
+
+      <!-- Filtro de búsqueda -->
+      <form method="GET" action="/admin/usuarios" class="d-flex mb-3 gap-2">
+        <input type="text" name="buscar" placeholder="Buscar por nombre o email" class="form-control"
+          value="<%= typeof filtro !== 'undefined' ? filtro : '' %>">
+        <button class="btn btn-outline-primary">🔍 Buscar</button>
+      </form>
+
+      <!-- Botón de creación -->
+      <div class="mb-3">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">➕ Crear
+          Usuario</button>
+      </div>
+
+      <!-- Modal para Crear Usuario -->
+      <div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="modalCrearUsuarioLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <form method="POST" action="/admin/usuarios/crear" class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalCrearUsuarioLabel">➕ Crear Usuario</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" name="nombre" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" name="email" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" name="password" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="rol" class="form-label">Rol</label>
+                <select name="rol" class="form-select" required>
+                  <% roles.forEach(r=> { %>
+                    <option value="<%= r._id %>">
+                      <%= r.nombre %>
+                    </option>
+                    <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Crear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tabla de usuarios -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (typeof usuarios !=='undefined' && Array.isArray(usuarios)) { %>
+              <% if (usuarios.length===0) { %>
+                <tr>
+                  <td colspan="5" class="text-center">No se encontraron usuarios.</td>
+                </tr>
+                <% } else { %>
+                  <% usuarios.forEach(usuario=> { %>
+                    <tr>
+                      <td>
+                        <%= usuario._id %>
+                      </td>
+                      <td>
+                        <%= usuario.nombre %>
+                      </td>
+                      <td>
+                        <%= usuario.email %>
+                      </td>
+                      <td>
+                        <%= usuario.rol?.nombre || 'Sin rol' %>
+                      </td>
+                      <td>
+                        <!-- Botón Editar con data-* -->
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                          data-bs-target="#modalEditarUsuario" data-id="<%= usuario._id %>"
+                          data-nombre="<%= usuario.nombre %>" data-email="<%= usuario.email %>"
+                          data-rol="<%= usuario.rol._id %>">
+                          ✏️ Editar
+                        </button>
+                        <form method="POST" action="/admin/usuarios/eliminar/<%= usuario._id %>" class="d-inline"
+                          onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
+                          <button class="btn btn-sm btn-danger">🗑️ Eliminar</button>
+                        </form>
+                      </td>
+                    </tr>
+                    <% }); %>
+                      <% } %>
+                        <% } else { %>
+                          <tr>
+                            <td colspan="5" class="text-center text-danger">⚠️ Error: no se recibió la variable
+                              "usuarios".</td>
+                          </tr>
+                          <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal Editar Usuario -->
+    <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="modalEditarUsuarioLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <form method="POST" id="formEditarUsuario" class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalEditarUsuarioLabel">✏️ Editar Usuario</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="id" id="editar-id">
+            <div class="mb-3">
+              <label for="editar-nombre" class="form-label">Nombre</label>
+              <input type="text" name="nombre" id="editar-nombre" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="editar-email" class="form-label">Correo electrónico</label>
+              <input type="email" name="email" id="editar-email" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="editar-rol" class="form-label">Rol</label>
+              <select name="rol" id="editar-rol" class="form-select" required>
+                <% roles.forEach(r=> { %>
+                  <option value="<%= r._id %>">
+                    <%= r.nombre %>
+                  </option>
+                  <% }) %>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script>
+      const modalEditar = document.getElementById('modalEditarUsuario');
+      modalEditar.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const nombre = button.getAttribute('data-nombre');
+        const email = button.getAttribute('data-email');
+        const rol = button.getAttribute('data-rol');
+
+        document.getElementById('editar-id').value = id;
+        document.getElementById('editar-nombre').value = nombre;
+        document.getElementById('editar-email').value = email;
+        document.getElementById('editar-rol').value = rol;
+
+        // Cambiar acción del formulario dinámicamente
+        const form = document.getElementById('formEditarUsuario');
+        form.action = `/admin/usuarios/editar/${id}`;
+      });
+    </script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

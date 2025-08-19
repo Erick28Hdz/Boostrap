@@ -1,0 +1,24 @@
+.footer {
+  background: var(--negro);
+  color: var(--blanco);
+  font-size: var(--font-xs);
+  padding: clamp(2rem, 5vw, 3rem) 0;
+  font-size: var(--font-sm);
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.footer a {
+  color: var(--verde-claro);
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+  color: var(--verde-pastel);
+}
+
+.footer i {
+  color: var(--verde-claro);
+}

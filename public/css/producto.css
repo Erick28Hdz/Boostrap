@@ -1,0 +1,59 @@
+.productos-section {
+  padding: clamp(2rem, 6vw, 4rem);
+  background: var(--verde-pastel);
+  color: var(--negro);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.productos-title {
+  text-align: center;
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: var(--verde-oscuro);
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(1rem, 3vw, 2rem);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.producto-card {
+  background: var(--blanco);
+  border-radius: 1rem;
+  padding: clamp(1rem, 2.5vw, 2rem);
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+  text-align: center;
+}
+
+.producto-card:hover {
+  transform: translateY(-5px);
+}
+
+.producto-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.producto-card h3 {
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  color: var(--verde-oscuro);
+  margin: 0.5rem 0;
+}
+
+.producto-card p {
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  color: var(--negro);
+  margin-bottom: 0.8rem;
+}
+
+.producto-card span {
+  font-weight: bold;
+  color: var(--verde-medio);
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+}

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Categorías - Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #343a40;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 12px 20px;
+      display: block;
+    }
+
+    .sidebar a:hover {
+      background-color: #495057;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
+
+    <!-- Contenido principal -->
+    <div class="main-content container-fluid">
+      <h1 class="mb-4">📂 Gestión de Categorías</h1>
+
+      <!-- Botón Crear e Importar -->
+      <div class="mb-3 d-flex gap-2">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCrearCategoria">➕ Nueva
+          Categoría</button>
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalImportarExcel">📥 Importar desde
+          Excel</button>
+      </div>
+
+      <!-- Modal Importar Excel -->
+      <div class="modal fade" id="modalImportarExcel" tabindex="-1" aria-labelledby="modalImportarExcelLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <form method="POST" action="/admin/categorias/importar" enctype="multipart/form-data" class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">📥 Importar Categorías desde Excel</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="archivoExcel" class="form-label">Selecciona un archivo Excel (.xlsx o .xls)</label>
+                <input type="file" name="archivo" accept=".xlsx,.xls" class="form-control" required>
+              </div>
+              <div class="alert alert-info">
+                Asegúrate de que el archivo tenga una columna llamada <strong>nombre</strong> (sin tilde).
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button class="btn btn-primary" type="submit">Importar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal Crear -->
+      <div class="modal fade" id="modalCrearCategoria" tabindex="-1" aria-labelledby="modalCrearCategoriaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <form method="POST" action="/admin/categorias/crear" class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">➕ Crear Categoría</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" name="nombre" class="form-control" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button class="btn btn-primary" type="submit">Crear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tabla de categorías -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Promoción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (typeof categorias !=='undefined' && categorias.length > 0) { %>
+              <% categorias.forEach(cat=> { %>
+                <tr>
+                  <td><%= cat._id %></td>
+                  <td><%= cat.nombre %></td>
+                  
+                  <!-- Columna Promoción -->
+                  <td>
+                    <% if (cat.promociones && cat.promociones.length > 0) { %>
+                      <% cat.promociones.forEach(promo => { %>
+                        <span class="badge bg-success d-block mb-1">
+                          <%= promo.titulo %> - <%= promo.valor %>
+                        </span>
+                      <% }) %>
+                    <% } else { %>
+                      <span class="badge bg-secondary">No</span>
+                    <% } %>
+                  </td>
+
+                  <!-- Acciones -->
+                  <td>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalEditarCategoria"
+                      data-id="<%= cat._id %>" data-nombre="<%= cat.nombre %>">
+                      ✏️ Editar
+                    </button>
+                    <form method="POST" action="/admin/categorias/eliminar/<%= cat._id %>" class="d-inline"
+                      onsubmit="return confirm('¿Eliminar esta categoría?');">
+                      <button class="btn btn-sm btn-danger">🗑️ Eliminar</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="4" class="text-center text-danger">⚠️ No hay categorías registradas.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal Editar -->
+    <div class="modal fade" id="modalEditarCategoria" tabindex="-1" aria-labelledby="modalEditarCategoriaLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <form method="POST" id="formEditarCategoria" class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">✏️ Editar Categoría</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="id" id="editar-id">
+            <div class="mb-3">
+              <label class="form-label">Nombre</label>
+              <input type="text" name="nombre" id="editar-nombre" class="form-control" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- JS Bootstrap y Script para modal -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const modalEditar = document.getElementById('modalEditarCategoria');
+      modalEditar.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const nombre = button.getAttribute('data-nombre');
+
+        document.getElementById('editar-id').value = id;
+        document.getElementById('editar-nombre').value = nombre;
+        document.getElementById('formEditarCategoria').action = `/admin/categorias/editar/${id}`;
+      });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+/* 🌿 Estilos Nosotros */
+
+main {
+  margin: 10rem 0rem;
+}
+
+/* 🎨 Secciones */
+.section-light {
+  background-color: var(--verde-pastel);
+  padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 4vw, 2rem);
+}
+
+.section-dark {
+  background-color: var(--verde-oscuro);
+  color: var(--blanco);
+  padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 4vw, 2rem);
+}
+
+/* 🧭 Títulos */
+.section-title {
+  color: var(--verde-oscuro);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  margin-bottom: clamp(1rem, 2vw, 2rem);
+  text-align: center;
+}
+
+.subtitle {
+  color: var(--verde-medio);
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 500;
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+  text-align: center;
+}
+
+/* 📷 Imagen tienda */
+.img-fluid {
+  border: 4px solid var(--verde-claro);
+  border-radius: clamp(0.3rem, 1vw, 0.6rem);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  height: auto;
+}
+
+/* 📝 Texto de sección */
+p {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  line-height: 1.6;
+}
+
+/* 💡 Íconos de servicios */
+.row.text-center img {
+  margin-bottom: clamp(0.4rem, 1vw, 0.7rem);
+  width: clamp(40px, 10vw, 64px);
+  height: auto;
+}
+
+h4 {
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  font-weight: 600;
+  margin-top: clamp(0.8rem, 2vw, 1.2rem);
+}
+
+.row.text-center p {
+  font-size: clamp(0.8rem, 2vw, 1rem);
+}
+
+/* 💬 Botón de WhatsApp */
+.whatsapp {
+  position: fixed;
+  right: 16px;
+  bottom: 20px;
+  z-index: 999;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.whatsapp img {
+  width: clamp(42px, 8vw, 56px);
+  height: clamp(42px, 8vw, 56px);
+}
+
+.whatsapp:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px 10px rgba(0, 255, 0, 0.4);
+}

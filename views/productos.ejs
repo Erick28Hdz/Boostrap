@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bootstrap</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/navbar.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/nosotros.css" />
+</head>
+
+<body>
+  <a href="#" class="whatsapp"><img src="img/universales/whatsapp.png" alt="whatsapp" /></a>
+  <header><%- include('partials/navbar') %></header>
+  <main>
+    <section class="promo-section text-center py-4 bg-success text-white">
+      <div class="container">
+        <h2 class="display-5 fw-bold">🍎 ¡Productos frescos cada día!</h2>
+        <p class="lead">
+          Explora nuestras frutas, verduras y más. Calidad garantizada y
+          precios justos.
+        </p>
+      </div>
+    </section>
+    
+
+    <section class="productos-section py-5 bg-light">
+      <div class="container">
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label">Filtrar por categoría</label>
+            <div class="dropdown w-100">
+              <button class="btn btn-outline-success dropdown-toggle w-100" type="button" id="dropdownCategorias"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Todas las categorías
+              </button>
+              <ul class="dropdown-menu w-100" style="max-height: 300px; overflow-y: auto;">
+                <li>
+                  <a class="dropdown-item categoria-opcion active" href="#" data-value="todas">
+                    Todas las categorías
+                  </a>
+                </li>
+                <% categorias.forEach(categoria=> { %>
+                  <li>
+                    <a class="dropdown-item categoria-opcion <%= (categoria.promociones && categoria.promociones.length > 0) ? 'text-warning fw-bold' : '' %>"
+                      href="#" data-value="<%= categoria.nombre.toLowerCase().replace(/\s+/g, '-') %>">
+                      <%= categoria.nombre %>
+                        <% if (categoria.promociones && categoria.promociones.length> 0) { %> ⭐ <% } %>
+                    </a>
+                  </li>
+                  <% }) %>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contenedor de productos -->
+        <div id="contenedorProductos" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+          <% productos.forEach(producto=> {
+            const promo = producto.promocionActiva;
+            %>
+            <div class="col producto-item"
+              data-categoria="<%= producto.categoria.nombre.toLowerCase().replace(/\s+/g, '-') %>">
+
+              <div class="card h-100 shadow-sm border-0 position-relative">
+
+                <!-- Dentro del loop de productos -->
+
+
+                <div class="position-absolute top-0 start-0 m-2">
+                  <% if (promo) { %>
+                    <% if (promo.tipo==='porcentaje' ) { %>
+                      <span class="badge bg-danger fs-6">
+                        -<%= promo.valor %>% OFF
+                      </span>
+                      <% } else if (promo.tipo==='monto_fijo' ) { %>
+                        <span class="badge bg-warning text-dark fs-6">
+                          -<%= new Intl.NumberFormat('es-CO', { style: 'currency' , currency: 'COP'
+                            }).format(promo.valor) %>
+                        </span>
+                        <% } else if (promo.tipo==='2x1' ) { %>
+                          <span class="badge bg-success fs-6">
+                            2x1
+                          </span>
+                          <% } %>
+                            <% } %>
+                </div>
+
+                <!-- Imagen -->
+                <a href="#" data-bs-toggle="modal" data-bs-target="#imagenModal"
+                  data-img="/uploads/productos/<%= producto.foto %>">
+                  <div class="d-flex justify-content-center align-items-center"
+                    style="height: 200px; overflow: hidden; background-color: transparent;">
+                    <img
+                      src="<%= producto.foto.startsWith('productos/') ? '/uploads/' + producto.foto : '/uploads/productos/' + (producto.foto || 'no-image.png') %>"
+                      alt="<%= producto.nombre %>"
+                      style="max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 8px; cursor: pointer;" />
+                  </div>
+                </a>
+
+                <!-- Cuerpo -->
+                <div class="card-body d-flex flex-column text-center">
+                  <h5 class="card-title mb-2">
+                    <%= producto.nombre %>
+                  </h5>
+                  <p class="card-text text-muted mb-3">
+                    <%= producto.descripcion %>
+                  </p>
+
+                  <!-- Precio -->
+                  <div class="mt-auto">
+                    <% if (promo && promo.tipo !=='2x1' ) { const precioOriginal=producto.precio; let
+                      precioConDescuento=precioOriginal; if (promo.tipo==='porcentaje' ) {
+                      precioConDescuento=precioOriginal * (1 - promo.valor / 100); } else if (promo.tipo==='monto_fijo'
+                      ) { precioConDescuento=Math.max(0, precioOriginal - promo.valor); } %>
+                      <div>
+                        <span class="text-muted text-decoration-line-through">
+                          <%= new Intl.NumberFormat('es-CO', { style: 'currency' , currency: 'COP'
+                            }).format(precioOriginal) %>
+                        </span>
+                        <br>
+                        <span class="fw-bold text-success fs-5">
+                          <%= new Intl.NumberFormat('es-CO', { style: 'currency' , currency: 'COP'
+                            }).format(precioConDescuento) %>
+                        </span>
+                      </div>
+                      <% } else { %>
+                        <span class="fw-bold text-success fs-5">
+                          <%= new Intl.NumberFormat('es-CO', { style: 'currency' , currency: 'COP'
+                            }).format(producto.precio) %>
+                        </span>
+                        <% } %>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <% }) %>
+        </div>
+
+        <!-- Paginación -->
+        <div class="d-flex justify-content-center mt-4">
+          <nav>
+            <ul class="pagination" id="paginacionProductos"></ul>
+          </nav>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer bg-dark text-white pt-4">
+    <%- include('partials/footer') %>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+    crossorigin="anonymous"></script>
+  <script>
+    const productos = document.querySelectorAll('.producto-item');
+    const dropdownButton = document.getElementById('dropdownCategorias');
+    const paginacion = document.getElementById('paginacionProductos');
+    const productosPorPagina = 6;
+    let paginaActual = 1;
+    let categoriaSeleccionada = "todas";
+
+    // Manejar selección de categoría
+    document.querySelectorAll(".categoria-opcion").forEach(opcion => {
+      opcion.addEventListener("click", function (e) {
+        e.preventDefault();
+        categoriaSeleccionada = this.getAttribute("data-value");
+        let texto = this.textContent.trim();
+
+        // Cambiar texto del botón
+        dropdownButton.textContent = texto;
+
+        // Quitar selección previa y marcar la nueva
+        document.querySelectorAll(".categoria-opcion").forEach(o => o.classList.remove("active"));
+        this.classList.add("active");
+
+        // Reiniciar página y mostrar productos
+        paginaActual = 1;
+        mostrarProductos(categoriaSeleccionada);
+      });
+    });
+
+    function mostrarProductos(categoria) {
+      const filtrados = Array.from(productos).filter(p => {
+        return categoria === 'todas' || p.dataset.categoria === categoria;
+      });
+
+      // Ocultar todos
+      productos.forEach(p => p.style.display = 'none');
+
+      // Mostrar solo los de la página actual
+      const inicio = (paginaActual - 1) * productosPorPagina;
+      const fin = inicio + productosPorPagina;
+      const pagina = filtrados.slice(inicio, fin);
+      pagina.forEach(p => p.style.display = 'block');
+
+      generarPaginacion(filtrados.length, categoria);
+    }
+
+    function generarPaginacion(total, categoria) {
+      paginacion.innerHTML = '';
+      const totalPaginas = Math.ceil(total / productosPorPagina);
+
+      for (let i = 1; i <= totalPaginas; i++) {
+        const li = document.createElement('li');
+        li.className = 'page-item' + (i === paginaActual ? ' active' : '');
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener('click', e => {
+          e.preventDefault();
+          paginaActual = i;
+          mostrarProductos(categoria);
+        });
+        paginacion.appendChild(li);
+      }
+    }
+
+    // Mostrar todos al inicio
+    mostrarProductos("todas");
+  </script>
+</body>
+
+</html>

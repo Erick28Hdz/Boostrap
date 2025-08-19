@@ -1,0 +1,34 @@
+:root {
+  --verde-oscuro: #3e5f44;
+  --verde-medio: #5e936c;
+  --verde-claro: #93da97;
+  --verde-pastel: #e8ffd7;
+  --blanco: #ffffff;
+  --negro: #1a1a1a;
+  --sombra: rgba(0, 122, 204, 0.5);
+
+  --font-xs: clamp(0.8rem, 1vw, 0.95rem);
+  --font-sm: clamp(1rem, 1.5vw, 1.1rem);
+  --font-md: clamp(1.2rem, 2vw, 1.5rem);
+  --font-lg: clamp(1.5rem, 2.5vw, 2rem);
+  --font-xl: clamp(2rem, 4vw, 3rem);
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--blanco);
+  color: var(--negro);
+  font-size: var(--font-sm);
+  line-height: 1.6;
+}
+
+/* 🎯 Encabezados */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--verde-oscuro);
+  font-weight: bold;
+}
+
+.dropdown-menu {
+  max-height: 250px; /* ajusta según tu gusto */
+  overflow-y: auto;
+}

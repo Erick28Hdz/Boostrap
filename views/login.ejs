@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/inicio.css">
+
+    <style>
+        /* Estilos mínimos del modal si no tienes CSS aún */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container container mt-5">
+        <h2>Iniciar Sesión</h2>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Entrar</button>
+            <a href="/register" class="btn btn-secondary">Registrarse</a>
+            <br><br>
+            <a href="#" id="abrirModalLink">Olvidé la contraseña</a>
+        </form>
+
+        <div class="message mt-3" id="message"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <span class="close" id="cerrarModalBtn">&times;</span>
+            <h4>Recuperar Contraseña</h4>
+            <form id="recoverForm">
+                <input type="email" id="recoverEmail" placeholder="Ingresa tu correo" class="form-control my-2"
+                    required>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </form>
+            <p id="recoverMessage" class="mt-2"></p>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const message = document.getElementById('message');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = '/?login=success';
+                } else {
+                    message.style.color = '#d9534f';
+                    message.textContent = data.message || 'Error al iniciar sesión';
+                }
+            } catch (err) {
+                message.textContent = 'Error en el servidor';
+                message.style.color = '#d9534f';
+            }
+        });
+
+        // Modal abrir/cerrar
+        document.getElementById("abrirModalLink").addEventListener("click", function (e) {
+            e.preventDefault();
+            document.getElementById("passwordModal").style.display = "flex";
+        });
+
+        document.getElementById("cerrarModalBtn").addEventListener("click", function () {
+            document.getElementById("passwordModal").style.display = "none";
+        });
+
+        // Cerrar si clic fuera del contenido
+        window.addEventListener("click", function (e) {
+            const modal = document.getElementById("passwordModal");
+            if (e.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+
+        // Manejo formulario recuperación
+        document.getElementById("recoverForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const email = document.getElementById("recoverEmail").value;
+
+            const response = await fetch("/api/recover-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await response.json();
+            const messageElement = document.getElementById("recoverMessage");
+            messageElement.textContent = data.message;
+            messageElement.style.color = data.success ? "green" : "red";
+        });
+    </script>
+</body>
+
+</html>

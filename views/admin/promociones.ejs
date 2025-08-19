@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Promociones - Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            display: block;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <%- include('../partials/sidebar') %>
+
+        <!-- Contenido principal -->
+        <div class="main-content container-fluid">
+            <h1 class="mb-4">🎁 Gestión de Promociones</h1>
+
+            <!-- Botón Crear -->
+            <div class="mb-3">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCrearPromocion">➕ Nueva
+                    Promoción</button>
+            </div>
+
+            <!-- Modal Crear -->
+            <div class="modal fade" id="modalCrearPromocion" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form method="POST" action="/admin/promociones/crear" class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">➕ Crear Promoción</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <!-- Campos básicos -->
+                            <div class="mb-3">
+                                <label class="form-label">Título</label>
+                                <input type="text" name="titulo" class="form-control" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Descripción</label>
+                                <textarea name="descripcion" class="form-control" required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Tipo</label>
+                                <select name="tipo" class="form-control" required>
+                                    <option value="porcentaje">Porcentaje</option>
+                                    <option value="monto_fijo">Monto Fijo</option>
+                                    <option value="2x1">2x1</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Valor</label>
+                                <input type="number" name="valor" class="form-control" />
+                            </div>
+
+                            <!-- Aplicar a -->
+                            <div class="mb-3">
+                                <label class="form-label">Aplicar a</label>
+                                <select name="aplicar_a" id="aplicarASelect" class="form-control" required>
+                                    <option value="todas">Todas</option>
+                                    <option value="categorias">Categoría</option>
+                                    <option value="productos">Producto</option>
+                                </select>
+                            </div>
+
+                            <!-- Categorías -->
+                            <div class="mb-3 d-none" id="categoriaSelectContainer">
+                                <label class="form-label">Selecciona una Categoría</label>
+                                <select name="categorias" class="form-control">
+                                    <% categorias.forEach(cat=> { %>
+                                        <option value="<%= cat._id %>">
+                                            <%= cat.nombre %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+
+                            <!-- Productos -->
+                            <div class="mb-3 d-none" id="productoSelectContainer">
+                                <label class="form-label">Selecciona un Producto</label>
+                                <select name="productos" class="form-control">
+                                    <% productos.forEach(prod=> { %>
+                                        <option value="<%= prod._id %>">
+                                            <%= prod.nombre %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+
+                            <!-- Fechas -->
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Inicio</label>
+                                <input type="date" name="fecha_inicio" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Fin</label>
+                                <input type="date" name="fecha_fin" class="form-control" required />
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button class="btn btn-primary" type="submit">Crear</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabla de promociones -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Descripción</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Aplica a</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (typeof promociones !=='undefined' && promociones.length> 0) { %>
+                            <% promociones.forEach(promo=> { %>
+                                <tr>
+                                    <td>
+                                        <%= promo._id %>
+                                    </td>
+                                    <td>
+                                        <%= promo.titulo %>
+                                    </td>
+                                    <td>
+                                        <%= promo.descripcion %>
+                                    </td>
+                                    <td>
+                                        <%= promo.tipo %>
+                                    </td>
+                                    <td>
+                                        <% if (promo.tipo==='monto_fijo' && promo.productos && promo.productos.length>
+                                            0) { %>
+                                            <% let precioOriginal=promo.productos[0].precio; let
+                                                precioNuevo=precioOriginal - promo.valor; %>
+                                                <%= new Intl.NumberFormat('es-CO', { style: 'currency' , currency: 'COP'
+                                                    }).format(precioOriginal) %>
+                                                    →
+                                                    <%= new Intl.NumberFormat('es-CO', { style: 'currency' ,
+                                                        currency: 'COP' }).format(precioNuevo) %>
+                                                        <% } else { %>
+                                                            <%= promo.valor %>
+                                                                <% } %>
+                                    </td>
+                                    <td>
+                                        <%= promo.fecha_inicio.toISOString().split('T')[0] %>
+                                    </td>
+                                    <td>
+                                        <%= promo.fecha_fin.toISOString().split('T')[0] %>
+                                    </td>
+                                    <td>
+                                        <% if (promo.productos && promo.productos.length> 0) { %>
+                                            <span class="badge bg-info">Producto(s)</span><br>
+                                            <% promo.productos.forEach(p=> { %>
+                                                <span>
+                                                    <%= p.nombre %>
+                                                </span><br>
+                                                <% }) %>
+                                                    <% } else if (promo.categorias && promo.categorias.length> 0) { %>
+                                                        <span class="badge bg-secondary">Categoría(s)</span><br>
+                                                        <% promo.categorias.forEach(c=> { %>
+                                                            <span>
+                                                                <%= c.nombre %>
+                                                            </span><br>
+                                                            <% }) %>
+                                                                <% } else { %>
+                                                                    <span class="text-muted">Ninguno</span>
+                                                                    <% } %>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#modalEditarPromocion" data-id="<%= promo._id %>"
+                                            data-titulo="<%= promo.titulo %>"
+                                            data-descripcion="<%= promo.descripcion %>" data-tipo="<%= promo.tipo %>"
+                                            data-valor="<%= promo.valor %>"
+                                            data-inicio="<%= promo.fecha_inicio.toISOString().split('T')[0] %>"
+                                            data-fin="<%= promo.fecha_fin.toISOString().split('T')[0] %>" data-aplica="<%=
+                                            promo.productos.length > 0 ? 'productos' :
+                                            promo.categorias.length > 0 ? 'categorias' : ''
+                                            %>"
+                                            data-producto="<%= promo.productos.length > 0 ? promo.productos[0]._id : '' %>"
+                                            data-categoria="<%= promo.categorias.length > 0 ? promo.categorias[0]._id : '' %>">
+                                            ✏️ Editar
+                                        </button>
+
+                                        <form method="POST" action="/admin/promociones/eliminar/<%= promo._id %>"
+                                            class="d-inline" onsubmit="return confirm('¿Eliminar esta promoción?');">
+                                            <button class="btn btn-sm btn-danger">🗑️ Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="8" class="text-center text-danger">⚠️ No hay promociones
+                                                registradas.</td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal Editar -->
+        <div class="modal fade" id="modalEditarPromocion" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form method="POST" id="formEditarPromocion" class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">✏️ Editar Promoción</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="editar-id">
+
+                        <div class="mb-3">
+                            <label class="form-label">Título</label>
+                            <input type="text" name="titulo" id="editar-titulo" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea name="descripcion" id="editar-descripcion" class="form-control"
+                                required></textarea>
+                        </div>
+
+                        <!-- NUEVO: Selección de producto o categoría -->
+                        <div class="mb-3">
+                            <label class="form-label">Aplica a</label>
+                            <select class="form-select" name="aplica_tipo" id="editar-aplica-tipo">
+                                <option value="">-- Ninguno --</option>
+                                <option value="productos">Producto</option>
+                                <option value="categorias">Categoría</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="editar-select-producto-container" style="display: none;">
+                            <label class="form-label">Seleccionar Producto</label>
+                            <select class="form-select" name="productos" id="editar-producto" multiple>
+                                <% productos.forEach(prod=> { %>
+                                    <option value="<%= prod._id %>">
+                                        <%= prod.nombre %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="editar-select-categoria-container" style="display: none;">
+                            <label class="form-label">Seleccionar Categoría</label>
+                            <select class="form-select" name="categorias" id="editar-categoria" multiple>
+                                <% categorias.forEach(cat=> { %>
+                                    <option value="<%= cat._id %>">
+                                        <%= cat.nombre %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tipo</label>
+                            <select name="tipo" id="editar-tipo" class="form-control" required>
+                                <option value="porcentaje">Porcentaje</option>
+                                <option value="monto_fijo">Monto Fijo</option>
+                                <option value="2x1">2x1</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Valor</label>
+                            <input type="number" name="valor" id="editar-valor" class="form-control">
+                        </div>
+
+                        <div class="mb-3" id="editar-precio-actual-container" style="display:none;">
+                            <label class="form-label">Precio Actual</label>
+                            <input type="text" id="editar-precio-actual" class="form-control" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de Inicio</label>
+                            <input type="date" name="fecha_inicio" id="editar-inicio" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de Fin</label>
+                            <input type="date" name="fecha_fin" id="editar-fin" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <!-- Terminar el proceso de categorias, solo queda que las categorias tengan el espacio en la tabla de su promoción y que en pantalla aparezca toda la categoria con descuento o 2x1 -->
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            const modalEditar = document.getElementById('modalEditarPromocion');
+            modalEditar.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget;
+
+                // Campos básicos
+                document.getElementById('editar-id').value = button.getAttribute('data-id');
+                document.getElementById('editar-titulo').value = button.getAttribute('data-titulo');
+                document.getElementById('editar-descripcion').value = button.getAttribute('data-descripcion');
+                document.getElementById('editar-tipo').value = button.getAttribute('data-tipo');
+                document.getElementById('editar-valor').value = button.getAttribute('data-valor');
+                document.getElementById('editar-inicio').value = button.getAttribute('data-inicio');
+                document.getElementById('editar-fin').value = button.getAttribute('data-fin');
+
+                // Datos de tipo de aplicación
+                const aplicaTipo = button.getAttribute('data-aplica');
+                const productoId = button.getAttribute('data-producto');
+                const categoriaId = button.getAttribute('data-categoria');
+
+                const tipoSelect = document.getElementById('editar-aplica-tipo');
+                const tipoPromoSelect = document.getElementById('editar-tipo'); // select de tipo de promo
+                const prodContainer = document.getElementById('editar-select-producto-container');
+                const catContainer = document.getElementById('editar-select-categoria-container');
+
+                tipoSelect.value = aplicaTipo || '';
+                prodContainer.style.display = aplicaTipo === 'productos' ? 'block' : 'none';
+                catContainer.style.display = aplicaTipo === 'categorias' ? 'block' : 'none';
+
+                const selectProducto = document.getElementById('editar-producto');
+                const selectCategoria = document.getElementById('editar-categoria');
+
+                // Limpiar selección anterior
+                if (selectProducto) {
+                    [...selectProducto.options].forEach(opt => opt.selected = false);
+                    selectProducto.removeAttribute("name");
+                }
+                if (selectCategoria) {
+                    [...selectCategoria.options].forEach(opt => opt.selected = false);
+                    selectCategoria.removeAttribute("name");
+                }
+
+                // Asignar valores según aplicaTipo
+                if (aplicaTipo === 'productos' && productoId) {
+                    selectProducto.setAttribute("name", "productos");
+                    const option = [...selectProducto.options].find(opt => opt.value === productoId);
+                    if (option) option.selected = true;
+                } else if (aplicaTipo === 'categorias' && categoriaId) {
+                    selectCategoria.setAttribute("name", "categorias");
+                    const option = [...selectCategoria.options].find(opt => opt.value === categoriaId);
+                    if (option) option.selected = true;
+                }
+
+                // 🔹 Aplicar restricción de Monto Fijo si es Categorías
+                const montoFijoOption = tipoPromoSelect.querySelector('option[value="monto_fijo"]');
+                if (aplicaTipo === 'categorias') {
+                    if (montoFijoOption) montoFijoOption.disabled = true;
+                    if (tipoPromoSelect.value === "monto_fijo") {
+                        tipoPromoSelect.value = "porcentaje";
+                    }
+                } else {
+                    if (montoFijoOption) montoFijoOption.disabled = false;
+                }
+
+                // Actualizar ruta del formulario
+                document.getElementById('formEditarPromocion').action =
+                    `/admin/promociones/editar/${button.getAttribute('data-id')}`;
+            });
+        </script>
+
+        <script>
+            const tipoSelect = document.getElementById('editar-aplica-tipo');
+            const tipoPromoSelect = document.getElementById('editar-tipo'); // tipo de promo
+            const prodContainer = document.getElementById('editar-select-producto-container');
+            const catContainer = document.getElementById('editar-select-categoria-container');
+
+            tipoSelect.addEventListener('change', () => {
+                const selected = tipoSelect.value;
+
+                // Mostrar y ocultar selects
+                prodContainer.style.display = selected === 'productos' ? 'block' : 'none';
+                catContainer.style.display = selected === 'categorias' ? 'block' : 'none';
+
+                // Limpiar ambos
+                document.getElementById('editar-producto').removeAttribute("name");
+                document.getElementById('editar-categoria').removeAttribute("name");
+
+                if (selected === 'productos') {
+                    document.getElementById('editar-producto').setAttribute("name", "productos");
+                } else if (selected === 'categorias') {
+                    document.getElementById('editar-categoria').setAttribute("name", "categorias");
+                }
+
+                // 🔹 Lógica de restricción de Monto Fijo
+                const montoFijoOption = tipoPromoSelect.querySelector('option[value="monto_fijo"]');
+                if (selected === 'categorias') {
+                    if (montoFijoOption) montoFijoOption.disabled = true;
+                    if (tipoPromoSelect.value === "monto_fijo") {
+                        tipoPromoSelect.value = "porcentaje";
+                    }
+                } else {
+                    if (montoFijoOption) montoFijoOption.disabled = false;
+                }
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const aplicarSelect = document.getElementById("aplicarASelect");
+                const tipoPromoSelect = document.querySelector('select[name="tipo"]'); // select de tipo de promoción
+                const categoriaContainer = document.getElementById("categoriaSelectContainer");
+                const productoContainer = document.getElementById("productoSelectContainer");
+
+                aplicarSelect.addEventListener("change", function () {
+                    const valor = aplicarSelect.value;
+
+                    // Oculta ambos campos primero
+                    categoriaContainer.classList.add("d-none");
+                    productoContainer.classList.add("d-none");
+
+                    // Limpia los campos no usados
+                    const catSelect = categoriaContainer.querySelector("select");
+                    const prodSelect = productoContainer.querySelector("select");
+                    if (catSelect) catSelect.removeAttribute("name");
+                    if (prodSelect) prodSelect.removeAttribute("name");
+
+                    if (valor === "categorias") {
+                        categoriaContainer.classList.remove("d-none");
+                        if (catSelect) catSelect.setAttribute("name", "categorias");
+
+                        // 🔹 Deshabilitar Monto Fijo cuando es Categorías
+                        const montoFijoOption = tipoPromoSelect.querySelector('option[value="monto_fijo"]');
+                        if (montoFijoOption) montoFijoOption.disabled = true;
+
+                        // Si estaba seleccionado monto fijo, cambiarlo a porcentaje
+                        if (tipoPromoSelect.value === "monto_fijo") {
+                            tipoPromoSelect.value = "porcentaje";
+                        }
+                    } else {
+                        productoContainer.classList.remove("d-none");
+                        if (prodSelect && valor === "productos") prodSelect.setAttribute("name", "productos");
+
+                        // 🔹 Volver a habilitar Monto Fijo en otros casos
+                        const montoFijoOption = tipoPromoSelect.querySelector('option[value="monto_fijo"]');
+                        if (montoFijoOption) montoFijoOption.disabled = false;
+                    }
+                });
+            });
+        </script>
+</body>
+
+</html>

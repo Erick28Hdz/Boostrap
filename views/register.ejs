@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/inicio.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Registro de Usuario</h2>
+        <form id="registerForm">
+            <label for="name">Nombre completo</label>
+            <input type="text" id="name" name="name" required />
+
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" name="email" required />
+
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" required />
+
+            <label for="confirmPassword">Confirmar contraseña</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required />
+
+            <button type="submit">Registrarse</button>
+            <a href="/login" class="btn btn-secondary">Ya tengo cuenta</a>
+            
+        </form>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const message = document.getElementById('message');
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = registerForm.name.value;
+            const email = registerForm.email.value;
+            const password = registerForm.password.value;
+            const confirmPassword = registerForm.confirmPassword.value;
+
+            if (password !== confirmPassword) {
+                message.style.color = '#d9534f';
+                message.textContent = 'Las contraseñas no coinciden.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    message.style.color = 'green';
+                    message.textContent = '¡Registro exitoso!';
+                    // Redirigir o limpiar formulario
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    message.style.color = '#d9534f';
+                    message.textContent = data.message || 'Error al registrar usuario.';
+                }
+            } catch (err) {
+                message.textContent = 'Error en el servidor';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+<div class="sidebar d-flex flex-column p-3">
+  <h4 class="text-center mb-4">Admin Panel</h4>
+
+  <a href="/">⏪ Volver a la página principal</a>
+  <a href="/dashboard">🏠 Panel</a>
+
+  <% if (usuario.rol.nombre === 'admin') { %>
+    <a href="/admin/productos">📦 Productos</a>
+    <a href="/admin/categorias">📂 Categorías</a> 
+    <a href="/admin/usuarios">👥 Usuarios</a>
+    <a href="/admin/publicidad">📢 Publicidad</a>
+    <a href="/admin/promociones">💸 Promociones</a> <!-- ✅ Nuevo -->
+    <a href="/admin/faqs">❓ FAQs</a>               <!-- ✅ Nuevo -->
+  <% } %>
+
+  <a href="/logout" class="mt-auto text-danger">🚪 Cerrar sesión</a>
+</div>

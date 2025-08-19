@@ -1,0 +1,67 @@
+/* 🎯 NAVBAR */
+.bg-nav {
+  background-color: var(--verde-oscuro); /* Color del navbar */
+}
+
+.navbar {
+  padding: 0.5rem 1rem; /* Reducido para hacerlo menos alto */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-weight: 600;
+  font-size: var(--font-md);
+  color: var(--verde-claro);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-brand .logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.navbar-nav .nav-link {
+  color: var(--verde-medio);
+  font-size: var(--font-sm);
+  padding: 0.3rem 0.6rem;
+  transition: color 0.3s;
+  position: relative;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--verde-claro);
+}
+
+.navbar-nav .nav-link::after {
+  content: "";
+  display: block;
+  width: 0%;
+  height: 2px;
+  background-color: var(--verde-claro);
+  transition: width 0.3s ease-in-out;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.navbar-nav .nav-link:hover::after {
+  width: 100%;
+}
+
+/* Estilo del botón ingresar */
+.btn-ingresar {
+  background-color: var(--verde-claro);
+  color: var(--verde-oscuro);
+  font-weight: 500;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.btn-ingresar:hover {
+  background-color: var(--verde-medio);
+}
